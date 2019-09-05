@@ -1,4 +1,4 @@
-variable "account_id" {
+variable "main_account_id" {
   description = "The ID of the main account"
 }
 

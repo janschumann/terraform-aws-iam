@@ -10,7 +10,7 @@ resource "aws_iam_group" "administrators_global" {
 module "main_administrators" {
   source = "./switch-role-policy"
 
-  account_id   = var.account_id
+  account_id   = var.main_account_id
   account_name = "Main"
   role         = "AccountAdministrator"
   groups       = [aws_iam_group.administrators_main.name]

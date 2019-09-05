@@ -20,8 +20,8 @@ data "aws_iam_policy_document" "base_user_policy" {
       "iam:ListUsers"
     ]
     resources = [
-      "arn:aws:iam::${var.account_id}:group/*",
-      "arn:aws:iam::${var.account_id}:user/*"
+      "arn:aws:iam::${var.main_account_id}:group/*",
+      "arn:aws:iam::${var.main_account_id}:user/*"
     ]
   }
 
@@ -45,9 +45,9 @@ data "aws_iam_policy_document" "base_user_policy" {
       "iam:ChangePassword"
     ]
     resources = [
-      "arn:aws:iam::${var.account_id}:user/$${aws:username}",
-      "arn:aws:iam::${var.account_id}:mfa/",
-      "arn:aws:iam::${var.account_id}:mfa/$${aws:username}"
+      "arn:aws:iam::${var.main_account_id}:user/$${aws:username}",
+      "arn:aws:iam::${var.main_account_id}:mfa/",
+      "arn:aws:iam::${var.main_account_id}:mfa/$${aws:username}"
     ]
   }
 }
