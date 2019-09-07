@@ -16,3 +16,11 @@ module "main_administrators" {
   groups       = [aws_iam_group.administrators_main.name]
 }
 
+module "service_test_administrators" {
+  source = "./switch-role-policy"
+
+  account_id   = lookup(var.associated_accounts, "service-test")
+  account_name = "Service"
+  role         = "AccountAdministrator"
+  groups       = [aws_iam_group.administrators_global.name]
+}
