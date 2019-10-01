@@ -13,14 +13,18 @@ data "aws_iam_policy_document" "role_switch_policy" {
 }
 
 resource "aws_iam_policy" "this" {
+  count = var.enable ? 1 : 0
+
   name = format("Assume%s%s", var.account_name, var.role)
 
   policy = data.aws_iam_policy_document.role_switch_policy.json
 }
 
 resource "aws_iam_policy_attachment" "this" {
-  name       = aws_iam_policy.this.name
-  policy_arn = aws_iam_policy.this.arn
+  count = var.enable ? 1 : 0
+
+  name       = aws_iam_policy.this[0].name
+  policy_arn = aws_iam_policy.this[0].arn
 
   groups = var.groups
 }

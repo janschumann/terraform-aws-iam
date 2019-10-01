@@ -1,5 +1,9 @@
-variable "main_account_id" {
-  description = "The ID of the main account"
+variable "enable" {
+  type = bool
+}
+
+variable "account_id" {
+  description = "The ID of this account"
 }
 
 variable "associated_accounts" {

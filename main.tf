@@ -20,8 +20,8 @@ data "aws_iam_policy_document" "base_user_policy" {
       "iam:ListUsers"
     ]
     resources = [
-      format("arn:aws:iam::%s:group/*", var.main_account_id),
-      format("arn:aws:iam::%s:user/*", var.main_account_id),
+      format("arn:aws:iam::%s:group/*", var.account_id),
+      format("arn:aws:iam::%s:user/*", var.account_id),
     ]
   }
 
@@ -45,14 +45,16 @@ data "aws_iam_policy_document" "base_user_policy" {
       "iam:ChangePassword"
     ]
     resources = [
-      format("arn:aws:iam::%s:user/$${aws:username}", var.main_account_id),
-      format("arn:aws:iam::%s:mfa/", var.main_account_id),
-      format("arn:aws:iam::%s:mfa/$${aws:username}", var.main_account_id),
+      format("arn:aws:iam::%s:user/$${aws:username}", var.account_id),
+      format("arn:aws:iam::%s:mfa/", var.account_id),
+      format("arn:aws:iam::%s:mfa/$${aws:username}", var.account_id),
     ]
   }
 }
 
 resource "aws_iam_policy" "base_user_policy" {
+  count = var.enable ? 1 : 0
+
   name = "AllowSelfUserManagement"
 
   policy = data.aws_iam_policy_document.base_user_policy.json

@@ -1,3 +1,7 @@
+variable "enable" {
+  type = bool
+}
+
 variable "account_id" {
   type        = string
   description = "The account to switch role to"
