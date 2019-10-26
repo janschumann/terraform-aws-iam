@@ -18,7 +18,7 @@ module "main_administrators" {
   account_id   = var.account_id
   account_name = "Main"
   role         = "AccountAdministrator"
-  groups       = [aws_iam_group.administrators_main[0].name]
+  groups       = [var.enable ? aws_iam_group.administrators_main[0].name : ""]
 }
 
 module "service_test_administrators" {
@@ -28,5 +28,5 @@ module "service_test_administrators" {
   account_id   = lookup(var.associated_accounts, "service-test", "")
   account_name = "Service"
   role         = "AccountAdministrator"
-  groups       = [aws_iam_group.administrators_global[0].name]
+  groups       = [var.enable ? aws_iam_group.administrators_global[0].name : ""]
 }
