@@ -10,54 +10,46 @@ resource "aws_iam_account_password_policy" "strict" {
   password_reuse_prevention      = 3
 }
 
-data "aws_iam_policy_document" "base_user_policy" {
-  version = "2012-10-17"
+resource "aws_iam_group" "this" {
+  for_each = toset(local.groups)
 
-  statement {
-    effect = "Allow"
-    actions = [
-      "iam:ListGroups",
-      "iam:ListUsers"
-    ]
-    resources = [
-      format("arn:aws:iam::%s:group/*", var.account_id),
-      format("arn:aws:iam::%s:user/*", var.account_id),
-    ]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "iam:CreateVirtualMFADevice",
-      "iam:DeleteVirtualMFADevice",
-      "iam:DeactivateMFADevice",
-      "iam:ListGroups",
-      "iam:ListUsers",
-      "iam:ListVirtualMFADevices",
-      "iam:ListMFADevices",
-      "iam:EnableMFADevice",
-      "iam:DeleteVirtualMFADevice",
-      "iam:CreateAccessKey",
-      "iam:DeleteAccessKey",
-      "iam:ListAccessKeys",
-      "iam:UploadSSHPublicKey",
-      "iam:UpdateSSHPublicKey",
-      "iam:ChangePassword"
-    ]
-    resources = [
-      format("arn:aws:iam::%s:user/$${aws:username}", var.account_id),
-      format("arn:aws:iam::%s:mfa/", var.account_id),
-      format("arn:aws:iam::%s:mfa/$${aws:username}", var.account_id),
-    ]
-  }
+  name = each.value
 }
 
-resource "aws_iam_policy" "base_user_policy" {
-  count = var.enable ? 1 : 0
+resource "aws_iam_user" "this" {
+  for_each = toset(local.users)
 
-  name = "AllowSelfUserManagement"
+  name = each.value
+}
 
+resource "aws_iam_user_policy" "this" {
+  for_each = toset(local.users)
+
+  name   = "AllowSelfUserManagement"
+  user   = aws_iam_user.this[each.value].name
   policy = data.aws_iam_policy_document.base_user_policy.json
 }
 
+resource "aws_iam_group_membership" "this" {
+  for_each = local.groups_users
 
+  name  = each.key
+  group = aws_iam_group.this[each.key].name
+  users = each.value
+}
+
+resource "aws_iam_group_policy" "global_account_administrators" {
+  count = local.enabled ? 1 : 0
+
+  name   = "AssumeRoleAccountAdministratorGlobal"
+  group  = "GlobalAccountAdministrators"
+  policy = data.aws_iam_policy_document.assume_role_global_administrators.json
+}
+
+resource "aws_iam_group_policy" "this" {
+  for_each = local.assume_role_policies
+
+  name   = format("AssumeRole%s%s", each.value["role"], each.value["account_name"])
+  group  = aws_iam_group.this[each.key].name
+  policy = data.aws_iam_policy_document.assume_role[each.key].json
+}
