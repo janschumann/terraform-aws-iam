@@ -1,1 +1,3 @@
-include $(AWS_GYMONDO_INFRA_HOME)/tools/Makefile.terraform-module
+TERRAFORM_PROVIDER = aws
+
+include $(TERRAFORM_MAKE_LIB_HOME)/terraform-module.mk
