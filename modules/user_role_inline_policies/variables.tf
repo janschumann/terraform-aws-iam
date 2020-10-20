@@ -4,6 +4,5 @@ variable "role" {
 
 variable "documents" {
   type    = list(any)
-  default = []
 }
 
