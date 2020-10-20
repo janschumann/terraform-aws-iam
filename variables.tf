@@ -27,6 +27,11 @@ variable "max_policies_per_role" {
   default = 10
 }
 
+variable "mfa_auth_age" {
+  type = number
+  default = 3600
+}
+
 locals {
   main_account_id = flatten([
     for account_type, account in var.accounts : [

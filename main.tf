@@ -73,7 +73,7 @@ module "iam_user_role" {
   role_name               = each.key
   custom_role_policy_arns = each.value
   role_requires_mfa       = true
-  mfa_age                 = 60
+  mfa_age                 = var.mfa_auth_age
   trusted_role_arns       = formatlist("arn:aws:iam::%s:root", [local.main_account_id])
 
   depends_on = [
