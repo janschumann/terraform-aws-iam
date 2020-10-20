@@ -53,3 +53,41 @@ resource "aws_iam_group_policy" "this" {
   group  = aws_iam_group.this[each.key].name
   policy = data.aws_iam_policy_document.assume_role[each.key].json
 }
+
+resource "aws_iam_policy" "user_role_policy" {
+  for_each = data.aws_iam_policy_document.user_role_policy
+
+  name   = each.key
+  policy = each.value.json
+}
+
+module "iam_user_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
+  version = "~> v2.14.0"
+
+  for_each = {
+    for role, policies in local.user_roles : role => length(policies) > 10 ? slice(policies, 0, 10) : policies if length(policies) > 0
+  }
+
+  create_role             = length(each.value) > 0
+  role_name               = each.key
+  custom_role_policy_arns = each.value
+  role_requires_mfa       = true
+  mfa_age                 = 60
+  trusted_role_arns       = formatlist("arn:aws:iam::%s:root", [local.main_account_id])
+
+  depends_on = [
+    aws_iam_policy.user_role_policy
+  ]
+}
+
+module "iam_user_role_policy" {
+  source = "../terraform-aws-gym-iam/modules/user_role_policy_converter"
+
+  for_each = {
+    for role, policies in local.user_roles : role => slice(policies, 10, length(policies) - 1) if length(policies) > 10
+  }
+
+  max_statements_per_inline_policy = 5
+  policy_arns                      = each.value
+}

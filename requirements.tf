@@ -46,7 +46,7 @@ data "aws_iam_policy_document" "assume_role_global_administrators" {
     actions = [
       "sts:AssumeRole"
     ]
-    resources = formatlist("arn:aws:iam::%s:role/%s", values(local.accociated_accounts), "AccountAdministrator")
+    resources = formatlist("arn:aws:iam::%s:role/%s", values(local.associated_accounts), "AccountAdministrator")
   }
 }
 
@@ -61,5 +61,26 @@ data "aws_iam_policy_document" "assume_role" {
     resources = [
       format("arn:aws:iam::%s:role/%s", each.value["account_id"], each.value["role"])
     ]
+  }
+}
+
+data "aws_iam_policy_document" "user_role_policy" {
+  for_each = local.user_role_policy_statements
+
+  dynamic "statement" {
+    for_each = each.value
+    content {
+      actions   = lookup(statement.value, "actions", [])
+      effect    = lookup(statement.value, "effect", "Allow")
+      resources = lookup(statement.value, "resources", ["*"])
+      dynamic "condition" {
+        for_each = lookup(statement.value, "conditions", [])
+        content {
+          test     = lookup(condition.value, "test")
+          values   = lookup(condition.value, "values")
+          variable = lookup(condition.value, "variable")
+        }
+      }
+    }
   }
 }
