@@ -82,12 +82,12 @@ module "iam_user_role" {
 }
 
 module "iam_user_role_policy" {
-  source = "./modules/iam_user_role_policy"
+  source = "./modules/user_role_inline_policies"
 
   for_each = {
     for role, policies in local.user_roles : role => slice(policies, 10, length(policies) - 1) if length(policies) > 10
   }
 
-  max_statements_per_inline_policy = 5
-  policy_arns                      = each.value
+  documents = each.value
+  role      = each.key
 }
