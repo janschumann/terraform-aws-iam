@@ -82,7 +82,7 @@ module "iam_user_role" {
 }
 
 module "iam_user_role_policy" {
-  source = "./modules/user_role_policy_converter"
+  source = "git@github.com:Gymondo-git/terraform-aws-gym-iam.git//modules/iam_user_role_policy?ref=develop"
 
   for_each = {
     for role, policies in local.user_roles : role => slice(policies, 10, length(policies) - 1) if length(policies) > 10

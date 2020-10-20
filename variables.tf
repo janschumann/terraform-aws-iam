@@ -47,10 +47,10 @@ locals {
   accounts = flatten([
     for account_type, account in var.accounts : flatten([
       for environment, spec in account : {
-        name       = format("%s-%s", account_type, environment)
-        type = account_type
+        name        = format("%s-%s", account_type, environment)
+        type        = account_type
         environment = environment
-        account_id = spec["account_id"]
+        account_id  = spec["account_id"]
         group = {
           for role in distinct(flatten(values(spec["users"]))) : role => join("", [for part in split("-", account_type != "main" ? format("%s-%s-%ss", account_type, environment, role) : format("%s-%ss", account_type, role)) : title(part)])
         }
