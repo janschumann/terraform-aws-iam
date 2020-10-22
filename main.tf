@@ -1,4 +1,6 @@
 resource "aws_iam_account_password_policy" "strict" {
+  count = local.create_users ? 1 : 0
+
   minimum_password_length        = 24
   require_lowercase_characters   = true
   require_numbers                = true
@@ -11,19 +13,19 @@ resource "aws_iam_account_password_policy" "strict" {
 }
 
 resource "aws_iam_group" "this" {
-  for_each = toset(local.groups)
+  for_each = local.create_users ? toset(local.groups) : toset([])
 
   name = each.value
 }
 
 resource "aws_iam_user" "this" {
-  for_each = toset(local.users)
+  for_each = local.create_users ? toset(local.users) : toset([])
 
   name = each.value
 }
 
 resource "aws_iam_user_policy" "this" {
-  for_each = toset(local.users)
+  for_each = local.create_users ? toset(local.users) : toset([])
 
   name   = "AllowSelfUserManagement"
   user   = aws_iam_user.this[each.value].name
@@ -31,7 +33,7 @@ resource "aws_iam_user_policy" "this" {
 }
 
 resource "aws_iam_group_membership" "this" {
-  for_each = local.groups_users
+  for_each = local.create_users ? local.groups_users : {}
 
   name  = each.key
   group = aws_iam_group.this[each.key].name
@@ -39,7 +41,7 @@ resource "aws_iam_group_membership" "this" {
 }
 
 resource "aws_iam_group_policy" "global_account_administrators" {
-  count = local.enabled ? 1 : 0
+  count = local.create_users ? 1 : 0
 
   name   = "AssumeRoleAccountAdministratorGlobal"
   group  = "GlobalAccountAdministrators"
@@ -47,7 +49,7 @@ resource "aws_iam_group_policy" "global_account_administrators" {
 }
 
 resource "aws_iam_group_policy" "this" {
-  for_each = local.assume_role_policies
+  for_each = local.create_users ? local.assume_role_policies : {}
 
   name   = format("AssumeRole%s%s", each.value["role"], each.value["account_name"])
   group  = aws_iam_group.this[each.key].name
@@ -55,7 +57,7 @@ resource "aws_iam_group_policy" "this" {
 }
 
 resource "aws_iam_policy" "user_role_policy" {
-  for_each = data.aws_iam_policy_document.user_role_policy
+  for_each = var.create_user_roles ? data.aws_iam_policy_document.user_role_policy : {}
 
   name   = each.key
   policy = each.value.json
@@ -66,10 +68,10 @@ module "iam_user_role" {
   version = "~> v2.14.0"
 
   for_each = {
-    for role, policies in local.user_roles : role => length(policies) > 10 ? slice(policies, 0, 10) : policies if length(policies) > 0
+    for role, policies in local.user_roles : role => length(policies) > var.user_role_max_managed_policies ? slice(policies, 0, var.user_role_max_managed_policies - 1) : policies if length(policies) > 0
   }
 
-  create_role             = length(each.value) > 0
+  create_role             = length(each.value) > 0 && var.create_user_roles
   role_name               = each.key
   custom_role_policy_arns = each.value
   role_requires_mfa       = true
@@ -85,9 +87,20 @@ module "iam_user_role_policy" {
   source = "./modules/user_role_policy_converter"
 
   for_each = {
-    for role, policies in local.user_roles : role => slice(policies, 10, length(policies) - 1) if length(policies) > 10
+    for role, policies in local.user_roles : role => slice(policies, var.user_role_max_managed_policies, length(policies) - 1) if length(policies) > var.user_role_max_managed_policies
   }
 
-  max_statements_per_inline_policy = 5
-  policy_arns                      = each.value
+  inline_policy_max_statements = var.user_role_inline_policy_max_statements
+  policy_arns                  = each.value
+}
+
+module "iam_user_role_inline_policies" {
+  source = "./modules/user_role_inline_policies"
+
+  for_each = {
+    for role, output in module.iam_user_role_policy : role => output["documents"] if length(output["documents"]) > 0
+  }
+
+  role      = each.key
+  documents = each.value
 }
