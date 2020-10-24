@@ -48,7 +48,7 @@ variable "user_role_inline_policy_max_statements" {
 
 variable "mfa_auth_age" {
   type = number
-  default = 3600
+  default = 86400
 }
 
 variable "create_user_roles" {
