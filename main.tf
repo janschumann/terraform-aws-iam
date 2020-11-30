@@ -68,7 +68,7 @@ module "iam_user_role" {
   version = "~> v2.14.0"
 
   for_each = {
-    for role, policies in local.user_roles : role => length(policies) > var.user_role_max_managed_policies ? slice(policies, 0, var.user_role_max_managed_policies - 1) : policies if length(policies) > 0
+    for role, policies in local.user_roles : role => length(policies) > var.user_role_max_managed_policies ? slice(policies, 0, var.user_role_max_managed_policies) : policies if length(policies) > 0
   }
 
   create_role             = length(each.value) > 0 && var.create_user_roles
@@ -87,7 +87,7 @@ module "iam_user_role_policy" {
   source = "./modules/user_role_policy_converter"
 
   for_each = {
-    for role, policies in local.user_roles : role => slice(policies, var.user_role_max_managed_policies, length(policies) - 1) if length(policies) > var.user_role_max_managed_policies
+    for role, policies in local.user_roles : role => slice(policies, var.user_role_max_managed_policies, length(policies)) if var.user_role_max_managed_policies < length(policies)
   }
 
   inline_policy_max_statements = var.user_role_inline_policy_max_statements
