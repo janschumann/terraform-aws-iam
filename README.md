@@ -18,7 +18,7 @@
 | environment | The name of the environment. If not set `terraform.workspace` will be used. | `string` | `""` | no |
 | global\_administrators | A list of users with global admin permissions | `list(string)` | `[]` | no |
 | main\_account\_name | The name of the main account. | `string` | `"main"` | no |
-| mfa\_auth\_age | n/a | `number` | `3600` | no |
+| mfa\_auth\_age | n/a | `number` | `86400` | no |
 | production\_environment\_name | The name of the production environment. | `string` | `"prod"` | no |
 | user\_role\_inline\_policy\_max\_statements | n/a | `number` | `10` | no |
 | user\_role\_max\_managed\_policies | n/a | `number` | `10` | no |

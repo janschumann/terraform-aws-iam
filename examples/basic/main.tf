@@ -9,6 +9,7 @@ provider "aws" {
 variable "account_id" {
   default = "000000000000"
 }
+
 module "iam" {
   source = "../../"
 
@@ -46,10 +47,6 @@ output "users" {
 
 output "groups_users" {
   value = module.iam.groups_users
-}
-
-output "assume_role_policies" {
-  value = module.iam.assume_role_policies
 }
 
 output "user_role_names" {
