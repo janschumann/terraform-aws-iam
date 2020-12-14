@@ -65,7 +65,7 @@ resource "aws_iam_policy" "user_role_policy" {
 
 module "iam_user_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = "~> v2.14.0"
+  version = "~> v3.6.0"
 
   for_each = {
     for role, policies in local.user_roles : role => length(policies) > var.user_role_max_managed_policies ? slice(policies, 0, var.user_role_max_managed_policies) : policies if length(policies) > 0
