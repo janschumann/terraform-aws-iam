@@ -1,15 +1,18 @@
 language: go
 
 go:
-  - 1.15.x
-  - 1.16.x
+- 1.15.x
+- 1.16.x
 
-# Install terraform
 before_install:
-  - curl -sLo /tmp/terraform.zip https://releases.hashicorp.com/terraform/0.15.3/terraform_0.15.3_linux_amd64.zip
-  - unzip /tmp/terraform.zip -d /tmp
-  - mv /tmp/terraform ~/bin
-  - export PATH="~/bin:$PATH"
+- curl -sLo /tmp/terraform.zip https://releases.hashicorp.com/terraform/0.15.3/terraform_0.15.3_linux_amd64.zip
+- unzip /tmp/terraform.zip -d /tmp
+- mv /tmp/terraform ~/bin
+- export PATH="~/bin:$PATH"
+
+env:
+  global:
+    secure: MHxRpFHL0yuFVDqC57YXm02QTaCf7VULaFQyG9Mo03RSs19JYcAXX0yZJvX/V1jlAJo2w/m3LWPPJ81RGyTosfl6j2q42qCt+KZVpfiNHE041OqnQLUq/ByGxjNtioFOnEIX2d3MBSXirs2A5vYILG2ULPZHxvsjg0j1b4n0kxXy/RFF/FP0pePA6vSFTTAATTcuOm1+nUKszOZdOQbSrrxIO4NPK6jBoMU+6yjokC3ImIfdVDE47WQeeJUItwqc571/1XL9Dv3hsDWhbSDUA8u/1pXRkQ5h9bkjggspDyZIbc74WbK11ZnQ5gyBQVUh9N1FrWa+OnY8k/aFDWVAaTIAZDEhL2msGUv+Fa1/RKDnBfrHjAIr7WQ5aGBZ+8LKU5IYJJHEFXvdnMUof3/URCc+jVfQ68bSCHheNc/JQ5BClOZOb3OiMeeYg8I1sS4oXcj4BbrkzJILorRGw15ihpJgXcdDs081Ekw9AyRgqkFAPeI4fH23yq/aNxKzLQ/tyzsuGpsHqWxTbTFvRUIlNNVuXNqHuEWJ0xsR+emeR1z6C1gjjihrORSDDpKsjm1fNUpt5YAMY3KFl+ySkob3ubdqj3MS7ZMIUSq+rvyHopzjLjKYuc1GduEeOsgIS16S6kqW7qwLhCcwzraK7e+OX7xylGXfKMHY1fn9QMQkUvE=
 
 script:
-  - make go-test
+- make go-test
