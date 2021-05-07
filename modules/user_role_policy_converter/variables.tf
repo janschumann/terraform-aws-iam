@@ -17,7 +17,7 @@ variable "inline_policy_max_statements" {
 }
 
 locals {
-  policy_arn_list = flatten(list(var.policy_arns))
+  policy_arn_list = flatten([var.policy_arns])
 
   extracted_statements = length(local.policy_arn_list) > 0 ? [
     for statement in flatten([for policy in data.aws_iam_policy.to_convert : jsondecode(policy.policy)["Statement"]]) : {

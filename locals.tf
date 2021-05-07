@@ -83,7 +83,7 @@ locals {
     AccountAdministrator = [
       "arn:aws:iam::aws:policy/AdministratorAccess"
     ]
-  }, {
+    }, {
     for role, statements in local.user_role_policy_statements : role => [
       format("arn:aws:iam::%s:policy/%s", var.account_id, role)
     ]

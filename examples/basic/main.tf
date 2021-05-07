@@ -3,7 +3,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = "eu-central-1"
+  region = "eu-central-1"
 }
 
 variable "account_id" {
@@ -13,14 +13,14 @@ variable "account_id" {
 module "iam" {
   source = "../../"
 
-  account_id                  = var.account_id
-  accounts                    = {
+  account_id = var.account_id
+  accounts = {
     main = {
       prod = {
         account_id = "000000000000"
-        users      = {
+        users = {
           "foo" = [
-            "AccountAdministrator"]
+          "AccountAdministrator"]
         }
       }
     }
@@ -33,7 +33,7 @@ module "iam" {
       }
     }
   }
-  create_users = false
+  create_users      = false
   create_user_roles = false
 }
 

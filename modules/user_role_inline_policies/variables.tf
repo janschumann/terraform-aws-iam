@@ -1,10 +1,10 @@
 variable "role" {
   description = "The name of the role."
-  type = string
+  type        = string
 }
 
 variable "documents" {
   description = "A list of objects containing policy statements."
-  type    = list(any)
+  type        = list(any)
 }
 
