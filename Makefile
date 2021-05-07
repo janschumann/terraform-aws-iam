@@ -1,6 +1,6 @@
 TERRAFORM_PROVIDER = aws
 
-include $(TERRAFORM_MAKE_LIB_HOME)/terraform-module.mk
+-include $(TERRAFORM_MAKE_LIB_HOME)/terraform-module.mk
 
 PKGS := $(shell go list ./... | grep -v /vendor)
 
