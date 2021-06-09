@@ -23,14 +23,14 @@ func TestIamElements(t *testing.T) {
 
 	users := terraform.OutputList(t, terraformOptions, "users")
 	expected_users := []string{
-	    "foo",
-	    "bar",
+		"foo",
+		"bar",
 	}
 	assert.Equal(t, expected_users, users)
 
 	userRoleNames := terraform.OutputList(t, terraformOptions, "user_role_names")
 	expectedUserRoleNames := []string{
-	    "AccountAdministrator",
+		"AccountAdministrator",
 	}
 	assert.Equal(t, expectedUserRoleNames, userRoleNames)
 }
